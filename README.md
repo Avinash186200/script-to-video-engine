@@ -1,0 +1,118 @@
+# script-to-video-engine
+
+Write a lesson as a short Python script. Get back a narrated 1080p video with captions and YouTube chapters, a
+vertical Short with word-by-word karaoke captions, and matching thumbnails.
+
+I built this to produce a 50-episode AI engineering course and its Shorts on my own, without recording or editing
+anything by hand: [AI Engineering from Scratch](https://github.com/Avinash186200/ai-engineering-from-scratch)
+([YouTube playlist](https://www.youtube.com/playlist?list=PLKRdiVI5CiMg)). Every video on that channel came out of
+these engines.
+
+| Slide lesson (16:9) | Short (9:16) | Short cover | Thumbnail |
+|---|---|---|---|
+| ![lesson](docs/lesson_frame.jpg) | ![short](docs/short_frame.jpg) | ![cover](docs/cover.jpg) | ![thumbnail](docs/thumbnail.jpg) |
+
+## What you write
+
+A lesson is a list of steps. Each step is one line of narration and one slide state:
+
+```python
+STEPS = [
+    {"t": {"tpl": "flow", "kicker": "How it works", "title": "Retrieve, then generate",
+           "boxes": [["1. Question", "from the user", "accent"],
+                     ["2. Retrieve", "the most relevant chunks", "gold"],
+                     ["3. Generate", "an answer from those chunks", "green"]]},
+     "say": "RAG fixes that in three steps. Take the question. Retrieve ...",
+     "chapter_name": "How RAG works"},
+]
+```
+
+A Short is four or five beats. Each beat is a headline, a line of narration and a small animated visual:
+
+```python
+BEATS = [
+    {"headline": "Function calling.",
+     "say": "Function calling is how a model asks to use a tool. Your app defines the tool, and your app runs it.",
+     "visual": {"type": "loop", "items": ["model asks", "app runs", "result back"]}},
+]
+```
+
+Full examples: [`examples/lesson_example.py`](examples/lesson_example.py) and [`examples/short_example.py`](examples/short_example.py).
+
+## What you get
+
+| | Slide lesson | Short |
+|---|---|---|
+| Video | 1920x1080, 30 fps, H.264/AAC | 1080x1920, 30 fps, H.264/AAC |
+| Narration | Text-to-speech per step (edge-tts) | Text-to-speech per beat, faster delivery |
+| Captions | `captions.srt`, one cue per step | Word-by-word karaoke captions burned in, plus `captions.srt` |
+| Metadata | `youtube.txt`: title, description, chapters computed from real audio lengths, tags | `youtube.txt`: title, description, tags |
+| Layouts | 16 slide templates: title, section, bullets, two columns, table, code, flow, bars, chat, tokens, callout, steps, roadmap, quiz, recap, end | 5 animated visuals: big number, gauge, versus, loop, thermometer |
+
+## How it works
+
+1. **Load and validate.** The script is imported as a module. Every step needs narration and a known template. Any
+   word listed in your local `banned_words.txt` (client or employer names, say) fails the build, so nothing
+   private slips into a public video.
+2. **Narrate.** Each step's text goes to edge-tts. For Shorts the engine also keeps the word-boundary events, so it
+   knows the exact start time of every spoken word.
+3. **Draw.** Pillow paints each slide. A short build-in animation is rendered frame by frame, then the final frame
+   is held for the rest of the narration. Shorts are drawn frame by frame for the whole beat, so the highlighted
+   caption word moves exactly with the voice.
+4. **Encode.** ffmpeg encodes one segment per step, then joins them without re-encoding. Chapter times come from
+   the measured audio lengths, so they always match the video.
+5. **Check mode.** `--check` skips audio and writes one still per step, which makes layout problems visible in
+   seconds. The tests and CI use it, so they need no network.
+
+## Run it
+
+Needs Python 3.11+ and ffmpeg on your PATH.
+
+```bash
+pip install -r requirements.txt
+
+python -m videoengine.slides examples/lesson_example.py --check   # stills only, no audio, no network
+python -m videoengine.slides examples/lesson_example.py           # output/lesson_example/video.mp4
+python -m videoengine.shorts examples/short_example.py            # output/shorts/short_example/video.mp4
+python -m videoengine.covers                                      # output/covers/example_cover.jpg
+python -m videoengine.thumbnails                                  # output/thumbnails/*.jpg
+
+python -m pytest -q                                               # check-mode tests, no network
+```
+
+Settings come from environment variables:
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `VE_SERIES` | `My Course` | Series name in the footer, thumbnails and metadata |
+| `VE_REPO_URL` | placeholder | Code link written into lesson descriptions |
+| `VE_VOICE` | `en-IN-PrabhatNeural` | Any edge-tts voice, e.g. `en-US-GuyNeural` |
+| `VE_FONT_DIR` | auto | Folder with your own fonts (Segoe UI on Windows, DejaVu on Linux, Arial on macOS by default) |
+
+Copy `banned_words.example.txt` to `banned_words.txt` to switch on the private-word check. That file is gitignored.
+
+## Layout
+
+```
+videoengine/
+    slides.py       slide-lesson engine (templates, narration, encode, chapters)
+    shorts.py       Shorts engine (word-timed karaoke captions, animated visuals)
+    thumbnails.py   16:9 thumbnails in three styles
+    covers.py       9:16 Short covers
+    settings.py     series name, voice, fonts, banned words
+examples/           one lesson, one Short
+tests/              check-mode rendering tests
+```
+
+## Limits
+
+- edge-tts is a free online service with no guarantees. Swap `synth_words` / `_tts` for another TTS if you need one
+  you control.
+- Narration speed and slide timing are tuned for teaching. A faster or slower voice may need different
+  `ANIM`/`PAD` values in `slides.py`.
+- Text that is too long for a template is shrunk or wrapped, not rejected. Run `--check` and look at the stills
+  before a full build.
+
+## License
+
+MIT

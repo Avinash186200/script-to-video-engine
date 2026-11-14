@@ -1,0 +1,32 @@
+META = {
+    "id": "lesson_example",
+    "day": 1,
+    "part": 1,
+    "yt_title": "What Is RAG? Retrieval-Augmented Generation in 2 Minutes",
+    "description": "A two-minute example lesson built with script-to-video-engine.",
+    "code": "",
+    "tags": ["RAG", "LLM", "AI engineering"],
+}
+
+STEPS = [
+    {"t": {"tpl": "title", "over": "Example lesson", "title": "What Is RAG?", "subtitle": "Retrieval-augmented generation in two minutes"},
+     "say": "What is RAG? In two minutes: what it is, how it works, and when you need it."},
+    {"t": {"tpl": "section", "kicker": "Part 1", "title": "The problem"},
+     "say": "A language model only knows what it saw in training. It does not know your company's documents."},
+    {"t": {"tpl": "flow", "kicker": "How it works", "title": "Retrieve, then generate",
+           "boxes": [["1. Question", "from the user", "accent"], ["2. Retrieve", "the most relevant chunks", "gold"],
+                     ["3. Generate", "an answer from those chunks", "green"]],
+           "note": "The model answers from the sources, and cites them."},
+     "say": "RAG fixes that in three steps. Take the question. Retrieve the most relevant chunks from your documents. Then let the model answer from those chunks, and cite them.",
+     "chapter_name": "How RAG works"},
+    {"t": {"tpl": "twocol", "kicker": "When to use it", "title": "RAG or fine-tuning?",
+           "left": {"head": "RAG", "items": ["Facts that change", "Answers you must cite"]},
+           "right": {"head": "Fine-tuning", "items": ["A format or style", "A narrow, high-volume task"]},
+           "note": "Facts go in retrieval. Behaviour can go in weights."},
+     "say": "Use RAG for facts that change and answers you must cite. Fine tuning is for a format or a style. Facts go in retrieval; behaviour can go in weights.",
+     "chapter_name": "RAG or fine-tuning?"},
+    {"t": {"tpl": "recap", "items": ["RAG = retrieve relevant chunks, then generate", "Answers stay current and citable", "Fine-tune for behaviour, not facts"],
+           "next": "chunking and embeddings"},
+     "say": "Recap. Retrieve, then generate. Answers stay current and citable. Fine tune for behaviour, not facts."},
+    {"t": {"tpl": "end"}, "say": "Thanks for watching."},
+]
