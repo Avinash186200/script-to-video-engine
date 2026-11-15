@@ -1,5 +1,7 @@
 # script-to-video-engine
 
+[![CI](https://github.com/Avinash186200/script-to-video-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/Avinash186200/script-to-video-engine/actions/workflows/ci.yml) ![Python](https://img.shields.io/badge/python-3.11-blue) [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 Write a lesson as a short Python script. Get back a narrated 1080p video with captions and YouTube chapters, a
 vertical Short with word-by-word karaoke captions, and matching thumbnails.
 
@@ -116,3 +118,5 @@ tests/              check-mode rendering tests
 ## License
 
 MIT
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and the [CHANGELOG](CHANGELOG.md).
