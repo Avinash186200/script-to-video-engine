@@ -14,6 +14,33 @@ these engines.
 |---|---|---|---|
 | ![lesson](docs/lesson_frame.jpg) | ![short](docs/short_frame.jpg) | ![cover](docs/cover.jpg) | ![thumbnail](docs/thumbnail.jpg) |
 
+## What problem this solves
+
+Making a teaching video by hand means recording narration, building slides, editing, timing captions and writing
+chapters, every time. For a 50-episode course that is weeks of editing. This repo turns a lesson written as plain
+Python data into a finished, narrated video with captions and chapters, so changing a lesson means editing text and
+rebuilding.
+
+## What you will learn
+
+- How to describe a video as data (a list of narrated steps) and render it with code.
+- How to drive a text-to-speech service from Python, including word-level timing.
+- How to draw slides and simple animations with Pillow.
+- How to use ffmpeg to encode segments and join them without re-encoding.
+- How to derive captions and YouTube chapters from measured audio lengths, so they never drift.
+- How a fast "check mode" and a banned-word list make a content pipeline safe to run often.
+
+## Key concepts
+
+- **Text-to-speech (TTS):** turns text into spoken audio. Here: edge-tts, a free online service.
+- **Word-boundary event:** the TTS service reports when each word starts. Shorts use it to highlight words in time.
+- **Karaoke caption:** a caption where the word being spoken is highlighted.
+- **SRT:** a plain-text caption file: cue number, start and end time, text.
+- **Chapters:** `0:00 Intro`-style lines in a YouTube description that become clickable sections.
+- **Segment and concat:** each step is encoded as its own small video, then ffmpeg joins them by copying the data
+  (stream copy), which is fast and lossless.
+- **Check mode:** a dry run that validates the script and draws one still per step, with no audio and no network.
+
 ## What you write
 
 A lesson is a list of steps. Each step is one line of narration and one slide state:
@@ -53,6 +80,18 @@ Full examples: [`examples/lesson_example.py`](examples/lesson_example.py) and [`
 
 ## How it works
 
+```mermaid
+flowchart LR
+    A[script.py<br/>META + STEPS or BEATS] --> B[load + validate]
+    B --> C[edge-tts<br/>MP3 per step]
+    C --> D[Pillow<br/>frames]
+    D --> E[ffmpeg<br/>segment per step]
+    E --> F[ffmpeg concat<br/>no re-encode]
+    F --> G[video.mp4<br/>captions.srt<br/>youtube.txt]
+```
+
+The full walkthrough, with the exact timings and settings, is in [docs/how-it-works.md](docs/how-it-works.md).
+
 1. **Load and validate.** The script is imported as a module. Every step needs narration and a known template. Any
    word listed in your local `banned_words.txt` (client or employer names, say) fails the build, so nothing
    private slips into a public video.
@@ -74,6 +113,7 @@ Needs Python 3.11+ and ffmpeg on your PATH.
 pip install -r requirements.txt
 
 python -m videoengine.slides examples/lesson_example.py --check   # stills only, no audio, no network
+python -m videoengine.shorts examples/short_example.py --check    # Short stills, no audio, no network
 python -m videoengine.slides examples/lesson_example.py           # output/lesson_example/video.mp4
 python -m videoengine.shorts examples/short_example.py            # output/shorts/short_example/video.mp4
 python -m videoengine.covers                                      # output/covers/example_cover.jpg
@@ -81,6 +121,11 @@ python -m videoengine.thumbnails                                  # output/thumb
 
 python -m pytest -q                                               # check-mode tests, no network
 ```
+
+Check-mode stills go to `output/_check/<id>/` and `output/shorts/_check/<id>/`. A full build needs network access
+for the voice. If `video.mp4` already exists, the build prints `skip (built)`; add `--force` to rebuild. On my
+machine the example lesson built as a 1.0-minute video (6 steps) and the example Short as 27.8 s (4 beats); both
+are example content, not results.
 
 Settings come from environment variables:
 
@@ -102,8 +147,12 @@ videoengine/
     thumbnails.py   16:9 thumbnails in three styles
     covers.py       9:16 Short covers
     settings.py     series name, voice, fonts, banned words
-examples/           one lesson, one Short
-tests/              check-mode rendering tests
+examples/           lesson_example.py · short_example.py
+tests/              test_check_mode.py: check-mode rendering, banned words, covers and thumbnails
+docs/               README.md (index) · how-it-works.md (walkthrough) · the four preview images
+output/             created by the engines, git-ignored
+banned_words.example.txt   copy to banned_words.txt (git-ignored) to switch on the private-word check
+.github/            CI workflow
 ```
 
 ## Limits

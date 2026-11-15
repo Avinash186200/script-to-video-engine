@@ -39,7 +39,7 @@ ROOT = Path.cwd()
 SCRIPTS = ROOT / "shorts"
 OUT = ROOT / "output" / "shorts"
 W, H, FPS = 1080, 1920, 30
-from videoengine.settings import SERIES, VOICE, load_font
+from videoengine.settings import SERIES, VOICE, banned_words, load_font
 
 BG = (250, 250, 250)
 INK = (20, 20, 22)
@@ -403,6 +403,10 @@ def load(path):
 
 
 def validate(meta, beats):
+    text = json.dumps([meta, beats]).lower()
+    bad = [m for m in banned_words() if m in text]
+    if bad:
+        raise SystemExit(f"{meta.get('id')}: banned words {bad}")
     for i, b in enumerate(beats):
         if not b.get("say", "").strip():
             raise SystemExit(f"{meta.get('id')}: beat {i} has empty 'say'")

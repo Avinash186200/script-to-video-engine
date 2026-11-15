@@ -40,6 +40,19 @@ def test_banned_words_block_a_script(tmp_path, monkeypatch):
         raise AssertionError("banned word was not caught")
 
 
+
+def test_banned_words_block_a_short(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "banned_words.txt").write_text("function calling\n", encoding="utf-8")
+    shorts = importlib.import_module("videoengine.shorts")
+    meta, beats = shorts.load(ROOT / "examples" / "short_example.py")
+    try:
+        shorts.validate(meta, beats)
+    except SystemExit as e:
+        assert "banned" in str(e)
+    else:
+        raise AssertionError("banned word was not caught")
+
 def test_covers_and_thumbnails():
     run("videoengine.covers")
     run("videoengine.thumbnails")
