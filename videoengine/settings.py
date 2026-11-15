@@ -52,7 +52,7 @@ def load_font(kind: str, size: int):
 
 
 def banned_words() -> list[str]:
-    """Words that must never appear in a script (client or employer names, say). One per line in
+    """Words that must never appear in a script (company or employer names, say). One per line in
     banned_words.txt next to this package or in the working directory. The file is gitignored."""
     for p in (Path.cwd() / "banned_words.txt", Path(__file__).resolve().parents[1] / "banned_words.txt"):
         if p.exists():

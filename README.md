@@ -93,7 +93,7 @@ flowchart LR
 The full walkthrough, with the exact timings and settings, is in [docs/how-it-works.md](docs/how-it-works.md).
 
 1. **Load and validate.** The script is imported as a module. Every step needs narration and a known template. Any
-   word listed in your local `banned_words.txt` (client or employer names, say) fails the build, so nothing
+   word listed in your local `banned_words.txt` (company or employer names, say) fails the build, so nothing
    private slips into a public video.
 2. **Narrate.** Each step's text goes to edge-tts. For Shorts the engine also keeps the word-boundary events, so it
    knows the exact start time of every spoken word.

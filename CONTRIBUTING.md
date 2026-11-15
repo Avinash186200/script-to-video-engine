@@ -17,7 +17,7 @@ python -m pytest -q
 ## How the repository is organised
 
 - The maintained code is described in the [README](README.md); method notes are in [`docs/`](docs/README.md).
-- Tests must stay fast and offline: no network, no API keys, no private data.
+- Tests must stay fast and offline: no network, no API keys, no local data files.
 
 ## Changes
 
