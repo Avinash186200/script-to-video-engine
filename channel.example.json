@@ -1,0 +1,16 @@
+{
+  "series": "My Course",
+  "repo_url": "https://github.com/your-name/your-course",
+  "main_playlist_url": "https://www.youtube.com/playlist?list=YOUR_MAIN_PLAYLIST_ID",
+  "shorts_playlist_url": "https://www.youtube.com/playlist?list=YOUR_SHORTS_PLAYLIST_ID",
+  "episodes": {
+    "day01_p1": {"video_id": "VIDEO_ID_1", "label": "Day 1, Part 1", "code": "day01_basics",
+                 "question": "Why should a chatbot never state a number from memory?"},
+    "day01_p2": {"video_id": "VIDEO_ID_2", "label": "Day 1, Part 2", "code": "day01_basics",
+                 "question": "Why can a short answer still cost a third of the bill?"}
+  },
+  "shorts": {
+    "s01_tokens": {"episode": "day01_p2"}
+  },
+  "default_related": {"video_id": "VIDEO_ID_1", "label": "the full course"}
+}

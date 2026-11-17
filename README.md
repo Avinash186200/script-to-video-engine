@@ -138,6 +138,39 @@ Settings come from environment variables:
 
 Copy `banned_words.example.txt` to `banned_words.txt` to switch on the private-word check. That file is gitignored.
 
+## Growth and upload tooling
+
+After the videos exist, a channel still needs thumbnails tested, titles tuned, Shorts prepared for upload and
+lesson pages published. These tools do that from data files, with no API calls and nothing channel-specific in the
+code. Full guide: [docs/growth-tooling.md](docs/growth-tooling.md).
+
+```bash
+cp channel.example.json channel.json      # your playlist links, video ids, episode map (git-ignored)
+
+python -m videoengine.hooks examples/hooks.example.csv                   # batch thumbnails + contact sheets
+python -m videoengine.ab_thumbs examples/ab_thumbs.example.json          # A/B variants on one comparison sheet
+python -m videoengine.growth ab --a 4000 120 --b 4100 165                # was the new thumbnail or title better?
+python -m videoengine.growth titles examples/title_experiments.example.csv   # title checks + rollback log
+python -m videoengine.growth pinned --config channel.json                # one pinned comment per episode
+python -m videoengine.batch_shorts examples/shorts_batch.example.json --out shorts/   # many Short scripts from one spec
+python -m videoengine.upload_prep --scripts shorts --config channel.json # rendered Shorts -> upload/shorts/
+python -m videoengine.lessons --lessons examples/lessons --out site/lessons  # Markdown lesson pages + index
+```
+
+| Tool | Input | Output |
+|---|---|---|
+| `hooks` | CSV of hook, highlight word, visual, tag | thumbnails + contact sheets |
+| `ab_thumbs` | JSON of variants per video | variant thumbnails + `_SHEET.jpg` |
+| `growth ab` | impressions and clicks for A and B | CTR, lift, z, p and a verdict |
+| `growth titles` | CSV of old/new titles | checks + `title_changes.md` with review dates |
+| `growth pinned` | channel config | `pinned_comments.json` + a paste file |
+| `batch_shorts` | JSON spec | one Short script per entry (+ covers) |
+| `upload_prep` | Short scripts + renders | `.mp4`, `.srt`, `.txt` metadata per Short |
+| `lessons` | lesson scripts (+ `youtube.txt` chapters) | one Markdown page per lesson + index |
+
+Which long video a Short links to is looked up from data: the script's `related_video`, then the config by id or
+number prefix, then `source_episode`, then a default. A Short with no match is still prepared, without the link.
+
 ## Layout
 
 ```
@@ -147,9 +180,17 @@ videoengine/
     thumbnails.py   16:9 thumbnails in three styles
     covers.py       9:16 Short covers
     settings.py     series name, voice, fonts, banned words
-examples/           lesson_example.py · short_example.py
-tests/              test_check_mode.py: check-mode rendering, banned words, covers and thumbnails
-docs/               README.md (index) · how-it-works.md (walkthrough) · the four preview images
+    config.py       channel config for the growth tools (channel.json / VE_CONFIG)
+    hooks.py        batch thumbnails from a hooks CSV, contact sheets
+    ab_thumbs.py    thumbnail A/B variants and comparison sheet
+    growth.py       title experiments, CTR A/B test, pinned comments
+    batch_shorts.py Short scripts from one JSON spec
+    upload_prep.py  rendered Shorts -> upload folder with metadata
+    lessons.py      Markdown lesson pages from lesson scripts
+examples/           lesson_example.py · short_example.py · lessons/ · shorts/ · *.example.csv/json inputs
+tests/              test_check_mode.py (rendering) · test_growth_tools.py (pure functions)
+docs/               README.md (index) · how-it-works.md · growth-tooling.md · the four preview images
+channel.example.json  copy to channel.json (git-ignored) for the growth tools
 output/             created by the engines, git-ignored
 banned_words.example.txt   copy to banned_words.txt (git-ignored) to switch on the private-word check
 .github/            CI workflow

@@ -3,6 +3,7 @@
 Start with the [README](../README.md). Files in this folder:
 
 - [How it works](how-it-works.md): the walkthrough of both engines
+- [Growth tooling](growth-tooling.md): thumbnails A/B, titles, pinned comments, Shorts upload prep, lesson pages
 - [cover](cover.jpg)
 - [lesson frame](lesson_frame.jpg)
 - [short frame](short_frame.jpg)

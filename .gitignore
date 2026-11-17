@@ -5,3 +5,5 @@ __pycache__/
 banned_words.txt
 *.mp3
 *.mp4
+channel.json
+upload/

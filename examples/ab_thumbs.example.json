@@ -1,0 +1,8 @@
+[
+  {"id": "tokens", "tag": "DAY 1",
+   "variants": {"B": {"style": "A", "hook": "Why Your AI|Bill Is HIGH", "highlight": "HIGH", "visual": "bars"},
+                "C": {"style": "B", "hook": "Tokens|= MONEY", "highlight": "MONEY", "visual": "bars"}}},
+  {"id": "rag_cite", "tag": "DAY 5",
+   "variants": {"B": {"style": "A", "hook": "Is Your RAG|Actually RIGHT?", "highlight": "RIGHT?", "visual": "warn"},
+                "C": {"style": "B", "hook": "Make AI|CITE Sources", "highlight": "CITE", "visual": "chat"}}}
+]

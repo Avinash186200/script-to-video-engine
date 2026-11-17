@@ -1,0 +1,22 @@
+{
+  "defaults": {
+    "kicker": "Interview",
+    "source_episode": "the full lesson",
+    "footer": "Code: https://github.com/your-name/your-course",
+    "hashtags": "#AIEngineering #AIInterview"
+  },
+  "shorts": [
+    {
+      "id": "s90_cache_threshold",
+      "title": "Semantic Cache: Which Threshold Is Safe? #Shorts",
+      "body": "Lower the similarity threshold and the hit rate goes up, but so do wrong answers. Pick it on your own data.",
+      "tags": ["semantic cache", "LLM cost", "AI engineering"],
+      "cover": ["Semantic Cache|THRESHOLD?", "THRESHOLD?", "0.9"],
+      "beats": [
+        ["What threshold?", "Interview question. You add a semantic cache. What similarity threshold do you use?", {"type": "bignum", "num": "0.?", "label": "similarity threshold"}],
+        ["Lower it, and it lies.", "Lower thresholds give more hits, and more wrong answers.", {"type": "versus", "left": "HITS", "left_sub": "go up", "right": "ERRORS", "right_sub": "go up too"}],
+        ["Pick it on your data.", "The better answer: pick the threshold from the wrong-answer rate you can accept.", {"type": "gauge", "value": 0.75, "lo": "HIT RATE", "hi": "PRECISION", "label": "a trade-off"}]
+      ]
+    }
+  ]
+}
